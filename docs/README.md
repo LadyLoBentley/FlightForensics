@@ -42,7 +42,10 @@ The following scripts are used to clean and prepare drone flight logs for analys
 - `Clean_flight_log.py`: Cleans raw drone CSV logs for flight path reconstruction. It filters relevant GPS, velocity, and orientation data, removes missing values, renames columns for clarity, and saves the output to the `processed/logs/flight/<flight_id/path_construction/` directory.
 
 
-- `clean_anomaly_log.py`: Prepares flight logs for anomaly detection by selecting relevant features such as velocity, acceleration, sensor readings, and battery stats. Outputs are saved to the `processed/logs/flight/<flight_id/anomaly_detection/` directiory.
+- `clean_anomaly_log.py`: Prepares flight logs for anomaly detection by selecting relevant features such as velocity, acceleration, sensor readings, and battery stats. Outputs are saved to the `processed/logs/flight/<flight_id>/anomaly_detection/` directory.
+
+
+- `nlp_spacy_pipeline.py`: Extracts structured entities from unstructured error log messages using spaCy's EntityRuler. Outputs labeled logs, such as subsystem, event, and warning, to `processed/logs/error/<flight_id>/` for feature engineering and anomaly detection.
 
 These scripts can be found in the `src/preprocess/` directory.
 
@@ -52,13 +55,16 @@ These scripts can be found in the `src/preprocess/` directory.
 To set up the environment and install dependencies, run:
 
     pip install -r requirements.txt
+    python -m spacy download en_core_web_sm
 
 --- 
 
 ## Dataset Overview
 ### Data Sources
 Data is sourced from the VTO.inc Drone Forensics Program, supported by DHS Cyber Security Division.
-***Dataset Link:** CFREDS Drone Dataset → https://cfreds-archive.nist.gov/drone-images.html
+
+
+**Dataset Link:** FREDS Drone Dataset → https://cfreds-archive.nist.gov/drone-images.html
 
 --- 
 

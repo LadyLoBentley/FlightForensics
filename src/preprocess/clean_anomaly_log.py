@@ -245,6 +245,10 @@ def clean_anomaly_log(input_path, output_path):
     # Save the cleaned dataset into the processed folder in \data
     input.to_csv(output_path, index=False)
 
-# Create the processed data
+# Create the processed data - flight from 02-04-47
 clean_anomaly_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-04-47_FLY003.csv",
                  "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/anomaly_detection/cleaned_18-06-19-02-04-47_anomaly_log.csv")
+
+# Create the processed data - flight from 02-11-31
+clean_anomaly_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-11-31_FLY004.csv",
+                  "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/anomaly_detection/cleaned_18-06-19-02-11-31_anomaly_log.csv")
