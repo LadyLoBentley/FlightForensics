@@ -1,7 +1,7 @@
 # README: ✈️FlightForensics 
 *A forensic Analysis of Drone Flight Data using NLP, Graph-Based Visualization, and Anomaly Detection.*
 
-## Project overview
+## Project Overview
 Flight forensics is a drone forensics tool that extracts, processes, and visualizes flight data to reconstruct drone 
 flight paths. It leverages **natural language processing (NLP) for log extraction, graph-based visualization and 
 animation for flight path reconstruction, and rule-based or ML-driven anomaly detection to classify suspicious drone
@@ -18,7 +18,7 @@ activity.
 
 ---
 
-## Project structure
+## Project Structure
 
 - **data** → flight logs and other relevant extracted data
 - **docs** → Documentation such as README, milestones, and project plans
@@ -26,13 +26,25 @@ activity.
 - **scripts** → Standalone scripts used for preprocessing and validation
 - **src** → Core source code
   - **analysis** → Flight data analysis scripts
-  - **extract** → Scripts to extract flight logs from backups 
   - **preprocess** → Data cleaning and preprocessing
   - **utils** → Helper functions and utilities
   - **visualization** → Flight path reconstruction and plotting
 - **tests** → Unit testing to verify data integrity 
 - **.gitignore** → Git ignored files
 - **requirements.txt** → Project dependencies
+
+---
+
+## Preprocessing Scripts
+
+The following scripts are used to clean and prepare drone flight logs for analysis:
+
+- `Clean_flight_log.py`: Cleans raw drone CSV logs for flight path reconstruction. It filters relevant GPS, velocity, and orientation data, removes missing values, renames columns for clarity, and saves the output to the `processed/logs/flight/<flight_id/path_construction/` directory.
+
+
+- `clean_anomaly_log.py`: Prepares flight logs for anomaly detection by selecting relevant features such as velocity, acceleration, sensor readings, and battery stats. Outputs are saved to the `processed/logs/flight/<flight_id/anomaly_detection/` directiory.
+
+These scripts can be found in the `src/preprocess/` directory.
 
 ---
 
@@ -56,23 +68,22 @@ Data is sourced from the VTO.inc Drone Forensics Program, supported by DHS Cyber
   - Milestone 2: Data Processing & NLP Model (In Progress)
   - Milestone 3: Flight Path Reconstruction (In Queue)
   - Milestone 4: Initial Visualization (In Queue)
-  - Milestone 5: Implement Rule-Based Anomaly Detection (In Queue)
+
+
+- **Phase 2:** Data Expansion & Refinement *(March 23 – April 10)*
+  - Milestone 5: Feature Engineering & ML Model Training (In Queue) 
+  - Milestone 6: Integrate model predictions into visualization (In Queue)
+  - Milestone 7: Final ML Model Testing & Refinements (In Queue)
+
+
+- **Phase 3:** Expansion of the Program *(April 17 – April 20)*
+  - Milestone 8: Expand NLP & Flight Path Reconstruction (In Queue) 
   
-  
-- **Phase 2:** Data Expansion & Refinement *(April 7 – April 12)*
-  - Milestone 6: Expand NLP & Flight Path Reconstruction (In Queue) 
-  - Milestone 7: Improve Rule-Based Detection & Performance (In Queue)
-  
-  
-- **Phase 3:** Machine Learning Anomaly Detection *(April 13 – April 17)*
-  - Milestone 8: Train ML-Based Anomaly Detection Model (In Queue) 
-  - Milestone 9: Integrate ML-Based Anomalies into Visualization 
-  
-  
-- **Phase 4:** Final Testing & Documentation *(April 18 – April 21)*
-  - Milestone 10: System Testing & Optimization (In Queue) 
-  - Milestone 11: Documentation & Final Report (In Queue) 
-  
+
+- **Phase 4:** Final Testing & Documentation *(April 12 – April 23)*
+  - Milestone 9: System Testing & Optimization (In Queue) 
+  - Milestone 10: Documentation & Final Report (In Queue)
+
 
 ---
 
