@@ -72,7 +72,6 @@ def clean_flight_log(input_path, output_path):
     input = pd.read_csv(input_path, usecols=lambda col: col in relevant_cols)
 
     # Drop the rows with missing values
-    input = input.dropna()
     #print(input.isna().sum())
 
     # Convert the GPS:dateTimeStamp to datetime format
@@ -137,6 +136,10 @@ def clean_flight_log(input_path, output_path):
     # Save the cleaned dataset into the processed folder in \data
     input.to_csv(output_path, index=False)
 
-# Create the processed data
+# Create the processed data from flight at 02-04-47
 clean_flight_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-04-47_FLY003.csv",
                  "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/path_construction/cleaned_18-06-19-02-04-47_path_log.csv")
+
+# Create the processed data from flight at 02-11-31
+clean_flight_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-11-31_FLY004.csv",
+                 "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/path_construction/cleaned_18-06-19-02-11-31_path_log.csv")
