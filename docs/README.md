@@ -7,6 +7,9 @@ flight paths. It leverages **natural language processing (NLP) for log extractio
 animation for flight path reconstruction, and rule-based or ML-driven anomaly detection to classify suspicious drone
 activity.
 
+This project includes supervised anomaly detection using Isolation Forest-generated pseudo-labels and XGBoost-based 
+classification for enhanced suspicious flight detection.
+
 ---
 
 ## Goals & Objectives
@@ -21,6 +24,7 @@ activity.
 ## Project Structure
 
 - **data** → flight logs and other relevant extracted data
+  - **models**  → Trained XGBoost model for anomaly classification 
 - **docs** → Documentation such as README, milestones, and project plans
 - **notebooks** → Jupyter notebooks for data exploration
 - **scripts** → Standalone scripts used for preprocessing and validation
@@ -51,6 +55,35 @@ These scripts can be found in the `src/preprocess/` directory.
 
 ---
 
+## Machine Learning - Anomaly Classification
+
+The anomaly detection component uses a hybrid approach:
+- **Unsupervised Pre-Labeling**: An Isolation Forest is applied to cleaned logs to generate pseudo-labels (`-1` for anomaly, `1` for normal).
+- **Supervised Classification**: An XGBoost model is trained using these labels to learn generalizable anomaly patterns across flights.
+
+Notebook: `notebooks/flight_anomaly_model.ipynb`
+
+---
+
+## Saved Models
+The XGBoost anomaly classifier is trained using pseudo-labels from Isolation Forest.
+
+Model Path: `data/models/xgb_anomaly_model.pkl`
+
+
+Use this model to classify unseen flight logs during simulation and visualization.
+
+Example:
+```python
+
+import joblib
+model = joblib.load("data/models/xgb_anomaly_model.pkl")
+y_pred = model.predict(new_flight_data)
+```
+
+
+---
+
 ## Installation
 To set up the environment and install dependencies, run:
 
@@ -71,13 +104,13 @@ Data is sourced from the VTO.inc Drone Forensics Program, supported by DHS Cyber
 ## Project Phases & Milestones
 - **Phase 1:** Prototype Development *(March 12 – April 6)*
   - Milestone 1: Define Scope & Requirements (Completed)
-  - Milestone 2: Data Processing & NLP Model (In Progress)
-  - Milestone 3: Flight Path Reconstruction (In Queue)
+  - Milestone 2: Data Processing & NLP Model (Completed)
+  - Milestone 3: Flight Path Reconstruction (In Progress)
   - Milestone 4: Initial Visualization (In Queue)
 
 
 - **Phase 2:** Data Expansion & Refinement *(March 23 – April 10)*
-  - Milestone 5: Feature Engineering & ML Model Training (In Queue) 
+  - Milestone 5: Feature Engineering & ML Model Training (Completed) 
   - Milestone 6: Integrate model predictions into visualization (In Queue)
   - Milestone 7: Final ML Model Testing & Refinements (In Queue)
 
