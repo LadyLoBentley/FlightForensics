@@ -4,6 +4,12 @@ clean_anomaly_log.py
 This script loads a raw drone flight CSV and selects relevant columns for detecting anomalies in
 flight paths, removes rows with missing GPS data, convert incompatible data types, renames relevant
 columns for interpretability, and saves a cleaned version to the processed logs folder.
+
+Input: A dataset of telemetry data from drone logs.
+Output: A cleaned dataset of a drone's flight path and the attributes relating to any anomalies present causing abnormal
+        drone behavior.
+
+This script is intended for capturing anomalies associated with drone flight paths sourced from structured data.
 """
 from tokenize import String
 

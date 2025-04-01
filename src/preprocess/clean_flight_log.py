@@ -4,6 +4,11 @@ clean_flight_log.py
 This script loads a raw drone flight CSV and selects relevant columns for flight path reconstruction,
 removes rows with missing GPS data, convert incompatible data types, renames relevant columns for
 interpretability, and saves a cleaned version to the processed logs folder.
+
+Input: A dataset of telemetry data from drone logs.
+Output: A cleaned dataset of only relevant features for reconstructing flight paths from drones.
+
+This script is intended for use of simulating historical flight paths.
 """
 
 # Import statements
