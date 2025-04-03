@@ -13,15 +13,17 @@ This script is intended for use of simulating historical flight paths.
 
 # Import statements
 import pandas as pd
+import os
 
 #---------------------------------------------------------------------------------------------------------------------
 
-def clean_flight_log(input_path, output_path):
+def clean_flight_log(input_path, output_path=None):
     '''
     Function to clean the flight log file to reconstruct flight paths.
 
     :param input_path: String representing the path of the raw input CSV file.
-    :param output_path: String representing the path of the processed CSV file.
+    :param output_path: (Optional) string representing the path of the processed CSV file.
+    :return: a pandas dataframe object containing the cleaned flight logs.
     '''
 
     # List of columns relevant to reconstructing flight paths
@@ -138,13 +140,29 @@ def clean_flight_log(input_path, output_path):
     #print(raw_input.columns)
     #print(raw_input.head())
 
-    # Save the cleaned dataset into the processed folder in \data
-    input.to_csv(output_path, index=False)
+    # Default output_dir if not provided
+    if output_path is None:
+        output_path = "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/path_construction/"
+
+    # Extract base filename (e.g., '18-06-19-02-04-47.csv' → '18-06-19-02-04-47')
+    base_name = os.path.splitext(os.path.basename(input_path))[0]
+
+    # Create dynamic output file name
+    output_filename = f"cleaned_{base_name}_path_log.csv"
+
+    # Full output path
+    full_output_path = os.path.join(output_path, output_filename)
+
+    # Save to file
+    input.to_csv(full_output_path, index=False)
+
+    print(f"[✔] Cleaned log saved to: {full_output_path}")
+
+    # Return the dataframe
+    return input
 
 # Create the processed data from flight at 02-04-47
-clean_flight_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-04-47_FLY003.csv",
-                 "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/path_construction/cleaned_18-06-19-02-04-47_path_log.csv")
+clean_flight_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-04-47_FLY003.csv")
 
 # Create the processed data from flight at 02-11-31
-clean_flight_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-11-31_FLY004.csv",
-                 "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/path_construction/cleaned_18-06-19-02-11-31_path_log.csv")
+clean_flight_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-11-31_FLY004.csv")
