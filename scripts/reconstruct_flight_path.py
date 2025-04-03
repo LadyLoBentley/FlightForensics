@@ -32,17 +32,23 @@ from geopy.distance import geodesic
 #---------------------------------------------------------------------------------------------------------------------
 
 # Function implementing graph construction
-def construct_flight_path(input, output=None):
+def construct_flight_path(input,
+                          output=None,
+                          drop_duplicates=True):
     '''
     Function to construct a spatial-temporal flight path.
 
     :param input: String representing the file path to raw csv file containing flight logs.
     :param output: (Optional) string representing the file path to save the processed dataset.
+    :param drop_duplicates: (Optional) Boolean to drop duplicate entries in the processed dataset.
     :return: A Directed Acyclic Graph object representing the spatial-temporal flight path and the pandas DataFrame containing flight logs.
     '''
 
     # Process the raw data into a DataFrame using clean flight log script
     drone_log = clean_flight_log.clean_flight_log(input)
+
+    if drop_duplicates:
+        drone_log = drone_log.drop_duplicates(subset=["gps_latitude", "gps_longitude", "imu_calc_lat", "imu_calc_long"])
 
     # Drop instances with relevant missing values
     drone_log = drone_log.dropna(subset=["imu_calc_lat",        # IMU-calculated latitude
