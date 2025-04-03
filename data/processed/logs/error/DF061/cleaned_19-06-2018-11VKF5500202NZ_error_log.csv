@@ -1,0 +1,33 @@
+timestamp,log_message,entity_txt,entity_label
+14:05:36,Backward Obstacle Sensing is not functioning.,Obstacle Sensing,SUBSYSTEM
+14:05:36,Backward Obstacle Sensing is not functioning.,not functioning,EVENT
+14:05:39,Backward Obstacle Sensing is not functioning.,Obstacle Sensing,SUBSYSTEM
+14:05:39,Backward Obstacle Sensing is not functioning.,not functioning,EVENT
+14:05:44,Backward Obstacle Sensing is not functioning.,Obstacle Sensing,SUBSYSTEM
+14:05:44,Backward Obstacle Sensing is not functioning.,not functioning,EVENT
+14:05:44,Ambient Light is too weak.,Light,ENVIRONMENT
+14:05:44,Ambient Light is too weak.,weak,EVENT
+14:08:51,Home Point recorded. Return-to-Home Altitude:98FT,Home Point,LOCATION
+14:08:51,Home Point recorded. Return-to-Home Altitude:98FT,recorded,EVENT
+14:08:51,Home Point recorded. Return-to-Home Altitude:98FT,Return-to-Home,PROCEDURE
+14:09:20,High wind velocity. Ensure the aircraft remains within your line of sight and fly with caution.,velocity,QUANTITY
+14:09:20,High wind velocity. Ensure the aircraft remains within your line of sight and fly with caution.,line of sight,PROCEDURE
+14:09:20,High wind velocity. Ensure the aircraft remains within your line of sight and fly with caution.,fly with caution,WARNING
+14:10:57,Weak signal. Avoid blocking the antennas and keep the antennas parallel to and facing toward the aircraft during flight.,Avoid blocking,PROCEDURE
+14:10:57,Weak signal. Avoid blocking the antennas and keep the antennas parallel to and facing toward the aircraft during flight.,antennas,SUBSYSTEM
+14:10:57,Weak signal. Avoid blocking the antennas and keep the antennas parallel to and facing toward the aircraft during flight.,antennas,SUBSYSTEM
+14:10:57,Weak signal. Avoid blocking the antennas and keep the antennas parallel to and facing toward the aircraft during flight.,facing toward the aircraft,PROCEDURE
+14:12:56,High wind velocity. Fly with caution and land in a safe place ASAP.,velocity,QUANTITY
+14:12:56,High wind velocity. Fly with caution and land in a safe place ASAP.,land,PROCEDURE
+14:12:56,High wind velocity. Fly with caution and land in a safe place ASAP.,ASAP,URGENT
+14:13:14,Forward Obstacle Sensing is not functioning.,Obstacle Sensing,SUBSYSTEM
+14:13:14,Forward Obstacle Sensing is not functioning.,not functioning,EVENT
+14:13:14,Altitude is too large. Backward Obstacle Sensing is not functioning.,Altitude,QUANTITY
+14:13:14,Altitude is too large. Backward Obstacle Sensing is not functioning.,Obstacle Sensing,SUBSYSTEM
+14:13:14,Altitude is too large. Backward Obstacle Sensing is not functioning.,not functioning,EVENT
+14:15:43,Obstacle Sensing will be disabled when aircraft is landing. Fly with caution.,Obstacle Sensing,SUBSYSTEM
+14:15:43,Obstacle Sensing will be disabled when aircraft is landing. Fly with caution.,disabled,STATUS
+14:16:15,Forward Obstacle Sensing is not functioning.,Obstacle Sensing,SUBSYSTEM
+14:16:15,Forward Obstacle Sensing is not functioning.,not functioning,EVENT
+14:16:15,Ambient Light is too weak.,Light,ENVIRONMENT
+14:16:15,Ambient Light is too weak.,weak,EVENT
