@@ -19,6 +19,9 @@ NetworkX.
 
 # Import statements
 
+# Script(s)
+from src.preprocess import clean_flight_log
+
 # Data Structures
 import pandas as pd
 import networkx as nx
@@ -29,16 +32,17 @@ from geopy.distance import geodesic
 #---------------------------------------------------------------------------------------------------------------------
 
 # Function implementing graph construction
-def construct_flight_path(path):
+def construct_flight_path(input, output=None):
     '''
     Function to construct a spatial-temporal flight path.
 
-    :param path: Path to processed drone flight dataset.
-    :return: A Directed Acyclic Graph object representing the spatial-temporal flight path.
+    :param input: String representing the file path to raw csv file containing flight logs.
+    :param output: (Optional) string representing the file path to save the processed dataset.
+    :return: A Directed Acyclic Graph object representing the spatial-temporal flight path and the pandas DataFrame containing flight logs.
     '''
 
-    # Convert data to DataFrame format
-    drone_log = pd.DataFrame(path)
+    # Process the raw data into a DataFrame using clean flight log script
+    drone_log = clean_flight_log.clean_flight_log(input)
 
     # Drop instances with relevant missing values
     drone_log = drone_log.dropna(subset=["imu_calc_lat",        # IMU-calculated latitude
@@ -89,8 +93,11 @@ def construct_flight_path(path):
         coord2 = (drone_log.loc[i+1, "gps_latitude"], drone_log.loc[i+1, "gps_longitude"])
         distance = geodesic(coord1, coord2).meters  # distance in meters
 
-        # Calculate speed
-        speed = distance / delta_time
+        # Calculate the speed of the drone
+        if delta_time == 0:
+            speed = None  # Avoid calculating invalid speed
+        else:
+            speed = distance / delta_time
 
         # Add edges
         G.add_edge(
@@ -103,4 +110,5 @@ def construct_flight_path(path):
             speed=speed              # Drone's speed during travel
         )
 
-    return G
+    # Return both the graph and pandas DataFrame representing the drone log
+    return G, drone_log

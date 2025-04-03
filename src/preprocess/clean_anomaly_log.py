@@ -14,15 +14,16 @@ This script is intended for capturing anomalies associated with drone flight pat
 
 # Import statements
 import pandas as pd
+import os
 
 #---------------------------------------------------------------------------------------------------------------------
 
-def clean_anomaly_log(input_path, output_path):
+def clean_anomaly_log(input_path, output=None):
     '''
     Function to clean the flight log file to reconstruct flight paths.
 
     :param input_path: String representing the path of the raw input CSV file.
-    :param output_path: String representing the path of the processed CSV file.
+    :return: A pandas dataframe containing the cleaned flight paths and attributes influencing abnormal drone behavior..
     '''
 
     # List of columns relevant to reconstructing flight paths
@@ -247,13 +248,29 @@ def clean_anomaly_log(input_path, output_path):
     # rename the attributes using dict
     input.rename(columns=name_map, inplace=True)
 
-    # Save the cleaned dataset into the processed folder in \data
-    input.to_csv(output_path, index=False)
+    # Default output_dir if not provided
+    if output is None:
+        output = "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/anomaly_detection"
+
+    # Extract base filename (e.g., '18-06-19-02-04-47.csv' → '18-06-19-02-04-47')
+    base_name = os.path.splitext(os.path.basename(input_path))[0]
+
+    # Create dynamic output file name
+    output_filename = f"cleaned_{base_name}_path_log.csv"
+
+    # Full output path
+    full_output_path = os.path.join(output, output_filename)
+
+    # Save to file
+    input.to_csv(full_output_path, index=False)
+
+    print(f"[✔] Cleaned log saved to: {full_output_path}")
+
+    # Return the dataset
+    return input
 
 # Create the processed data - flight from 02-04-47
-clean_anomaly_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-04-47_FLY003.csv",
-                 "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/anomaly_detection/cleaned_18-06-19-02-04-47_anomaly_log.csv")
+clean_anomaly_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-04-47_FLY003.csv")
 
 # Create the processed data - flight from 02-11-31
-clean_anomaly_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-11-31_FLY004.csv",
-                  "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/anomaly_detection/cleaned_18-06-19-02-11-31_anomaly_log.csv")
+clean_anomaly_log("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-11-31_FLY004.csv")

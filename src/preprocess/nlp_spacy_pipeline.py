@@ -26,14 +26,18 @@ import spacy
 from datetime import datetime
 import re
 
+# File management tools
+import os
+
 #---------------------------------------------------------------------------------------------------------------------
 
-def structure_error_logs(input, output):
+def structure_error_logs(input, output=None):
     '''
     Function to extract structured information from unstructured drone error log messages utilizing the spaCy library.
 
-    :param input: A file path to the raw, unstructured drone error log messages.
-    :param output: A file path to the extracted structured drone error log messages.
+    :param input: String representing file path to the raw, unstructured drone error log messages.
+    :param output: (Optional) string representing file path to the extracted structured drone error log messages.
+    return: A pandas dataframe object containing structured error logs associated with telemetry flight data.
     '''
     # Load the English pipeline
     nlp = spacy.load("en_core_web_sm")
@@ -131,8 +135,24 @@ def structure_error_logs(input, output):
     error_logs = pd.DataFrame(structured)
     #print(error_logs.head())
 
-    # Save the DataFrame
-    error_logs.to_csv(output, index=False)
+    # Default output_dir if not provided
+    if output is None:
+        output = "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/error/DF061"
 
-structure_error_logs("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/error/DF061/19-06-2018-11VKF5500202NZ",
-                     "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/error/DF061/18-06-19_error_log_structured")
+    # Extract base filename (e.g., '18-06-19-02-04-47.csv' → '18-06-19-02-04-47')
+    base_name = os.path.splitext(os.path.basename(input))[0]
+
+    # Create dynamic output file name
+    output_filename = f"cleaned_{base_name}_error_log.csv"
+
+    # Full output path
+    full_output_path = os.path.join(output, output_filename)
+
+    # Save to file
+    error_logs.to_csv(full_output_path, index=False)
+
+    print(f"[✔] Cleaned log saved to: {full_output_path}")
+    # Return the dataframe
+    return error_logs
+
+structure_error_logs("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/error/DF061/19-06-2018-11VKF5500202NZ")
