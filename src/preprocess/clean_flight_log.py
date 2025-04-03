@@ -13,8 +13,8 @@ This script is intended for use of simulating historical flight paths.
 
 # Import statements
 import pandas as pd
-import os
 
+#---------------------------------------------------------------------------------------------------------------------
 
 def clean_flight_log(input_path, output_path):
     '''

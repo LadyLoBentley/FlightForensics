@@ -3,7 +3,7 @@
 
 ## Project Overview
 Flight forensics is a drone forensics tool that extracts, processes, and visualizes flight data to reconstruct drone 
-flight paths. It leverages **natural language processing (NLP) for log extraction, graph-based visualization and 
+flight paths. It leverages **natural language processing (NLP)** for log extraction, graph-based visualization and 
 animation for flight path reconstruction, and rule-based or ML-driven anomaly detection to classify suspicious drone
 activity.
 
@@ -27,10 +27,10 @@ classification for enhanced suspicious flight detection.
   - **models**  → Trained XGBoost model for anomaly classification 
 - **docs** → Documentation such as README, milestones, and project plans
 - **notebooks** → Jupyter notebooks for data exploration
-- **scripts** → Standalone scripts used for preprocessing and validation
+- **scripts** → Standalone scripts used for path reconstruction and validation
 - **src** → Core source code
   - **analysis** → Flight data analysis scripts
-  - **preprocess** → Data cleaning and preprocessing
+  - **preprocess** → Data cleaning and preprocessing scripts
   - **utils** → Helper functions and utilities
   - **visualization** → Flight path reconstruction and plotting
 - **tests** → Unit testing to verify data integrity 
@@ -52,6 +52,33 @@ The following scripts are used to clean and prepare drone flight logs for analys
 - `nlp_spacy_pipeline.py`: Extracts structured entities from unstructured error log messages using spaCy's EntityRuler. Outputs labeled logs, such as subsystem, event, and warning, to `processed/logs/error/<flight_id>/` for feature engineering and anomaly detection.
 
 These scripts can be found in the `src/preprocess/` directory.
+
+---
+
+## Flight Path Reconstruction
+
+The flight path reconstruction module uses cleaned drone logs to create a spatial-temporal graph of the drone's movement.
+Each node represents a timestamped IMU-calculated position, and each edge connects sequential nodes, weighted by:
+
+- `delta_time`: Time elapsed between nodes
+- `distance`: IMU_based gepdesic distance
+- `speed`: Distance divided by time
+- `position_error`: Deviation between IMU and GPS
+
+Node attributes include:
+- `pos`: IMU-calculated coordinates (latitude, longitude)
+- `gps_pos`: GPS-based coordinates (latitude, longitude)
+- `timestamp`: GPS timestamp converted in dateTime format
+- `control_mode`: Drone's current control mode
+- `motor_state`: Motor status
+- `velocity`: Composite velocity reported by the drone
+- `distance`: Cumulative distance traveled
+
+Script: `\scripts\reconstruct_flight_path.py`
+- Builds a **Directed Acyclic Graph (DAG)** representing the drone's historic flight path using `networkx`.
+
+Notebook: `notebooks/construct_flight_paths.ipynb`
+- Interactive notebook used to prototype graph construction and visualization logic prior to scripting.
 
 ---
 
@@ -105,8 +132,8 @@ Data is sourced from the VTO.inc Drone Forensics Program, supported by DHS Cyber
 - **Phase 1:** Prototype Development *(March 12 – April 6)*
   - Milestone 1: Define Scope & Requirements (Completed)
   - Milestone 2: Data Processing & NLP Model (Completed)
-  - Milestone 3: Flight Path Reconstruction (In Progress)
-  - Milestone 4: Initial Visualization (In Queue)
+  - Milestone 3: Flight Path Reconstruction (Completed)
+  - Milestone 4: Initial Visualization (In Progress)
 
 
 - **Phase 2:** Data Expansion & Refinement *(March 23 – April 10)*

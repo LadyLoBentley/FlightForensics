@@ -11,12 +11,11 @@ Output: A cleaned dataset of a drone's flight path and the attributes relating t
 
 This script is intended for capturing anomalies associated with drone flight paths sourced from structured data.
 """
-from tokenize import String
 
 # Import statements
 import pandas as pd
-import os
 
+#---------------------------------------------------------------------------------------------------------------------
 
 def clean_anomaly_log(input_path, output_path):
     '''
@@ -138,7 +137,7 @@ def clean_anomaly_log(input_path, output_path):
     # Convert GPS:dateTimeStamp to dateTime format
     input["GPS:dateTimeStamp"] = pd.to_datetime(input["GPS:dateTimeStamp"])
 
-    # Convert the object attributes to Strings
+    # Convert Controller: ctrl_mode to category
     input["Controller:ctrl_mode"] = input["Controller:ctrl_mode"].astype("category")
 
     # rename log attributes for better interpretability

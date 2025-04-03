@@ -13,118 +13,126 @@ The extracted entities can be used to:
 This pipeline is lightweight, customizable, and designed to scale as additional drone models and log formats are
 introduced.
 '''
-from calendar import month
 
 # Import statements
-import spacy
+
+# Data structures
 import pandas as pd
-import re
+
+# Natural Language Processing Tools
+import spacy
+
+# Temporal Tools
 from datetime import datetime
+import re
 
-# Load the English pipeline
-nlp = spacy.load("en_core_web_sm")
+#---------------------------------------------------------------------------------------------------------------------
 
-# Add the EntityRuler
-ruler = nlp.add_pipe("entity_ruler", before="ner")
+def structure_error_logs(input, output):
+    '''
+    Function to extract structured information from unstructured drone error log messages utilizing the spaCy library.
 
-# Define patterns in DJI Phantom Model error logs
-dji_phantom_patterns = [
-    # Capture hardware entities
-    {"label": "SUBSYSTEM", "pattern": "Obstacle Sensing"},
-    {"label": "SUBSYSTEM", "pattern": "antennas"},
+    :param input: A file path to the raw, unstructured drone error log messages.
+    :param output: A file path to the extracted structured drone error log messages.
+    '''
+    # Load the English pipeline
+    nlp = spacy.load("en_core_web_sm")
 
-    # Capture communication entities
-    {"label": "COMMUNICATION", "pattern": "Signal"},
+    # Add the EntityRuler
+    ruler = nlp.add_pipe("entity_ruler", before="ner")
 
-    # Capture drone status entities
-    {"label": "STATUS", "pattern": "disabled"},
+    # Define patterns in DJI Phantom Model error logs
+    dji_phantom_patterns = [
+        # Capture hardware entities
+        {"label": "SUBSYSTEM", "pattern": "Obstacle Sensing"},
+        {"label": "SUBSYSTEM", "pattern": "antennas"},
 
-    # Capture environmental entities
-    {"label": "ENVIRONMENT", "pattern": "Wind"},
-    {"label": "ENVIRONMENT", "pattern": "Light"},
+        # Capture communication entities
+        {"label": "COMMUNICATION", "pattern": "Signal"},
 
-    # Capture geographic entities
-    {"label": "LOCATION", "pattern": "Home Point"},
+        # Capture drone status entities
+        {"label": "STATUS", "pattern": "disabled"},
 
-    # Capture event entities
-    {"label": "EVENT", "pattern": "not functioning"},
-    {"label": "EVENT", "pattern": "recorded"},
-    {"label": "EVENT", "pattern": "weak"},
+        # Capture environmental entities
+        {"label": "ENVIRONMENT", "pattern": "Wind"},
+        {"label": "ENVIRONMENT", "pattern": "Light"},
 
-    # Capture drone metric entities
-    {"label": "QUANTITY", "pattern": "velocity"},
-    {"label": "QUANTITY", "pattern": "Altitude"},
+        # Capture geographic entities
+        {"label": "LOCATION", "pattern": "Home Point"},
 
-    # Capture potential threat entities
-    {"label": "WARNING", "pattern": "fly with caution"},
-    {"label": "URGENT", "pattern": "ASAP"},
+        # Capture event entities
+        {"label": "EVENT", "pattern": "not functioning"},
+        {"label": "EVENT", "pattern": "recorded"},
+        {"label": "EVENT", "pattern": "weak"},
 
-    # Capture safety suggestion entities
-    {"label": "PROCEDURE", "pattern": "Return-to-Home"},
-    {"label": "PROCEDURE", "pattern": "line of sight"},
-    {"label": "PROCEDURE", "pattern": "land"},
-    {"label": "PROCEDURE", "pattern": "facing toward the aircraft"},
-    {"label": "PROCEDURE", "pattern": "Avoid blocking"}
+        # Capture drone metric entities
+        {"label": "QUANTITY", "pattern": "velocity"},
+        {"label": "QUANTITY", "pattern": "Altitude"},
 
-]
+        # Capture potential threat entities
+        {"label": "WARNING", "pattern": "fly with caution"},
+        {"label": "URGENT", "pattern": "ASAP"},
 
-# Add the patterns to the EntityRuler
-ruler.add_patterns(dji_phantom_patterns)
+        # Capture safety suggestion entities
+        {"label": "PROCEDURE", "pattern": "Return-to-Home"},
+        {"label": "PROCEDURE", "pattern": "line of sight"},
+        {"label": "PROCEDURE", "pattern": "land"},
+        {"label": "PROCEDURE", "pattern": "facing toward the aircraft"},
+        {"label": "PROCEDURE", "pattern": "Avoid blocking"}
+    ]
 
-# Get path to file log
-path = ("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/error/DF061/19-06-2018-11VKF5500202NZ")
+    # Add the patterns to the EntityRuler
+    ruler.add_patterns(dji_phantom_patterns)
 
-# Read the error log
-with open(path, "r") as f:
-    raw_log = f.read()
+    # Read the error log
+    with open(input, "r") as f:
+        raw_log = f.read()
 
-# Extract timestamped log blocks
-pattern = r"##\s*(\d{2}:\d{2}:\d{2})(.*?)(?=##|$)"
-matches = re.findall(pattern, raw_log, re.DOTALL)
+    # Extract timestamped log blocks
+    pattern = r"##\s*(\d{2}:\d{2}:\d{2})(.*?)(?=##|$)"
+    matches = re.findall(pattern, raw_log, re.DOTALL)
 
-# Hard code flight date and convert in dateTime format
-flight_date = "2018-06-19"
-flight_date = datetime.strptime(flight_date, "%Y-%m-%d")
+    # Hard code flight date and convert in dateTime format
+    flight_date = "2018-06-19"
+    flight_date = datetime.strptime(flight_date, "%Y-%m-%d")
 
-# Strip whitespaces and empty lines
-# log_msgs = [line.strip() for line in raw_log if line.strip()]
+    # Process each message to structure data
+    structured = []
+    for timestamp, message in matches:                # For each message,
+        try:
+            full_ts = datetime.strptime(timestamp.strip(), "%H:%M:%S").replace(
+                year = flight_date.year,
+                month = flight_date.month,
+                day = flight_date.day
+            )
+        except ValueError:
+            continue    # Skip any incompatible timestamps
 
-# Process each message to structure data
-structured = []
-for timestamp, message in matches:                # For each message,
-    try:
-        full_ts = datetime.strptime(timestamp.strip(), "%H:%M:%S").replace(
-            year = flight_date.year,
-            month = flight_date.month,
-            day = flight_date.day
-        )
-    except ValueError:
-        continue    # Skip any incompatible timestamps
+        messages = message.strip().split("\n")    # Divide messages based on newline
 
-    messages = message.strip().split("\n")    # Divide messages based on newline
+        for message in messages:        # For each message,
+            message = message.strip()       # remove whitespace
 
-    for message in messages:        # For each message,
-        message = message.strip()       # remove whitespace
-        if not message:             # and if it is a blank line,
-            continue                    # skip it
+            if not message:             # and if it is a blank line,
+                continue                    # skip it
 
-        doc = nlp(message)  # Process the sentence
+            doc = nlp(message)  # Process the sentence
 
-        for ent in doc.ents:                # For each entity,
-            if ent.label != "org":              # Ensure that ORG entities are not included
-                structured.append({                 # Then add it to a dictionary
-                    "timestamp": timestamp.strip(),
-                    "log_message": message,
-                    "entity_txt": ent.text,
-                    "entity_label": ent.label_
-                })
+            for ent in doc.ents:                # For each entity,
+                if ent.label != "org":              # Ensure that ORG entities are not included
+                    structured.append({                 # Then add it to a dictionary
+                        "timestamp": timestamp.strip(),
+                        "log_message": message,
+                        "entity_txt": ent.text,
+                        "entity_label": ent.label_
+                    })
 
-# Create a Dataframe to store structured data
-error_logs = pd.DataFrame(structured)
-print(error_logs.head())
+    # Create a Dataframe to store structured data
+    error_logs = pd.DataFrame(structured)
+    #print(error_logs.head())
 
-# Get path to the output location
-output_path = "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/error/DF061/18-06-19_error_log_structured.csv"
+    # Save the DataFrame
+    error_logs.to_csv(output, index=False)
 
-# Save the DataFrame
-error_logs.to_csv(output_path, index=False)
+structure_error_logs("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/error/DF061/19-06-2018-11VKF5500202NZ",
+                     "/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/error/DF061/18-06-19_error_log_structured")
