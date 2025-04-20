@@ -51,6 +51,9 @@ def construct_flight_path(input,
     if drop_duplicates:
         drone_log = drone_log.drop_duplicates(subset=["gps_latitude", "gps_longitude", "imu_latitude", "imu_longitude"])
 
+    if drop_duplicates:
+        drone_log = drone_log.drop_duplicates(subset=["gps_latitude", "gps_longitude", "imu_calc_lat", "imu_calc_long"])
+
     # Drop instances with relevant missing values
     drone_log = drone_log.dropna(subset=["imu_latitude",        # IMU-calculated latitude
                                          "imu_longitude",       # IMU-calculated longitude
