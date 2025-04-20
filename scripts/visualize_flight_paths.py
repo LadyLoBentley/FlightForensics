@@ -69,18 +69,16 @@ def plot_basic_path(input,
     fig, ax = plt.subplots(figsize=(10, 8))
     alpha_val = 0.8
 
-    # Color nodes based on drone activity
+    # Color IMU nodes based on activity
     node_colors = [
         "red" if G.nodes[n].get("activity") == -1 else "green"
         for n in G.nodes
     ]
 
-    # Plot the IMU-calculated coordinates
-    # IMU Nodes and Edges
     nx.draw_networkx_nodes(G,
                            pos,
                            node_size=node_size,
-                           node_color=node_colors,
+                           node_color=node_colors,  # IMU path nodes colored by activity
                            alpha=alpha_val,
                            ax=ax)
 
