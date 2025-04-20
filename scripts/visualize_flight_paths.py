@@ -20,7 +20,7 @@ import reconstruct_flight_path
 
 # Data Structures
 import pandas as pd
-import numpy as pd
+import numpy as np
 import networkx as nx
 
 # Import visualizations
@@ -36,7 +36,7 @@ def plot_basic_path(input,
                     drop_duplicates=True,
                     imu_color="#E69F00",  # Orange (IMU path nodes)
                     gps_color="#56B4E9",  # Sky Blue (GPS path nodes)
-                    imu_edge_color="#B35A00",  # Softer orange
+                    imu_edge_color="grey",  # Softer orange
                     gps_edge_color = "#005F80",  # Muted blue
                     node_size=50,
                     labels=False):
@@ -69,33 +69,22 @@ def plot_basic_path(input,
     fig, ax = plt.subplots(figsize=(10, 8))
     alpha_val = 0.8
 
-    # Plot the IMU-calculated coordinates
-    # IMU Nodes and Edges
+    # Color IMU nodes based on activity
+    node_colors = [
+        "red" if G.nodes[n].get("activity") == -1 else "green"
+        for n in G.nodes
+    ]
+
     nx.draw_networkx_nodes(G,
                            pos,
                            node_size=node_size,
-                           node_color=imu_color,
+                           node_color=node_colors,  # IMU path nodes colored by activity
                            alpha=alpha_val,
                            ax=ax)
 
     nx.draw_networkx_edges(G,
                            pos,
                            edge_color=imu_edge_color,
-                           alpha=0.6,
-                           width=1.25,
-                           ax=ax)
-
-    # GPS Nodes and Edges
-    nx.draw_networkx_nodes(G,
-                           gps_pos,
-                           node_size=node_size,
-                           node_color=gps_color,
-                           alpha=alpha_val,
-                           ax=ax)
-
-    nx.draw_networkx_edges(G,
-                           gps_pos,
-                           edge_color=gps_edge_color,
                            alpha=0.6,
                            width=1.25,
                            ax=ax)
@@ -127,8 +116,8 @@ def plot_basic_path(input,
 
     # Add legend
     legend = [
-        mpatches.Patch(color=imu_color, label="IMU Path"),
-        mpatches.Patch(color=gps_color, label="GPS Path")
+        mpatches.Patch(color="green", label="Normal Activity"),
+        mpatches.Patch(color="red", label="Suspicious Activity")
     ]
     ax.legend(handles=legend, loc='upper right')
 
@@ -138,5 +127,6 @@ def plot_basic_path(input,
     plt.tight_layout()
     plt.show()
 
-plot_basic_path("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-04-47_FLY003.csv")
-plot_basic_path("/Users/ladylo/PycharmProjects/FlightForensics/data/raw/logs/flight/DF061/18-06-19-02-11-31_FLY004.csv")
+log = pd.read_csv("/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/anomaly_detection/model_ready/flight_anomaly_dataset.csv")
+log = log[log["flight_sequence"] == "flight04"].reset_index(drop=True)
+plot_basic_path(log)

@@ -16,11 +16,11 @@ Output: A networkX Graph object representing the spatial-temporal flight path.
 This script is intended to create a Directed Acyclic Graph (DAG) representation of the drone's flight path utilizing
 NetworkX.
 '''
+from networkx.algorithms.shortest_paths.dense import reconstruct_path
 
 # Import statements
 
 # Script(s)
-from src.preprocess import clean_flight_log
 
 # Data Structures
 import pandas as pd
@@ -44,21 +44,27 @@ def construct_flight_path(input,
     :return: A Directed Acyclic Graph object representing the spatial-temporal flight path and the pandas DataFrame containing flight logs.
     '''
 
-    # Process the raw data into a DataFrame using clean flight log script
-    drone_log = clean_flight_log.clean_flight_log(input)
+
+    drone_log = input
+    #clean_flight_log(input)
+
+    if drop_duplicates:
+        drone_log = drone_log.drop_duplicates(subset=["gps_latitude", "gps_longitude", "imu_latitude", "imu_longitude"])
 
     if drop_duplicates:
         drone_log = drone_log.drop_duplicates(subset=["gps_latitude", "gps_longitude", "imu_calc_lat", "imu_calc_long"])
 
     # Drop instances with relevant missing values
-    drone_log = drone_log.dropna(subset=["imu_calc_lat",        # IMU-calculated latitude
-                                         "imu_calc_long",       # IMU-calculated longitude
+    drone_log = drone_log.dropna(subset=["imu_latitude",        # IMU-calculated latitude
+                                         "imu_longitude",       # IMU-calculated longitude
                                          "gps_latitude",        # GPS-based latitude
                                          "gps_longitude",       # GPS-based longitude
                                          "gps_timestamp"])      # GPS-based timestamp
 
     # Convert gps_timestamp to dateTime format
-    drone_log["gps_timestamp"] = pd.to_datetime(drone_log["gps_timestamp"])
+    drone_log["gps_timestamp"] = pd.to_datetime(
+        drone_log["gps_timestamp"], errors='coerce'
+    ).dt.tz_localize(None)
 
     # Sort DataFrame in chronological order
     drone_log = drone_log.sort_values(by=["gps_timestamp"]).reset_index(drop=True)
@@ -69,7 +75,7 @@ def construct_flight_path(input,
     # Create a node for each instance holding spatial-temporal data
     for i, row in drone_log.iterrows():
         # Create the coordinate calculated by IMU sensors
-        imu_coord = (row["imu_calc_lat"], row["imu_calc_long"])
+        imu_coord = (row["imu_latitude"], row["imu_longitude"])
 
         # Create the coordinate captured by GPS satellites
         gps_coord = (row["gps_latitude"], row["gps_longitude"])
@@ -79,11 +85,12 @@ def construct_flight_path(input,
             i,                                  # Node Identifier,
             pos=imu_coord,                      # IMU-calculated coordinate,
             gps_pos=gps_coord,                  # GPS-based coordinate,
-            timestamp=row["gps_timestamp"],     # GPS-baed timestamp,
+            timestamp=row["gps_timestamp"],     # GPS-based timestamp,
             control_mode=row["control_mode"],   # Drone's current control mode,
-            motor_state=row["motor_state"],     # Drone's motor state,
             velocity=row["vel_composite"],      # Drone's measurement of velocity,
-            distance=row["dist_travelled"]      # And total distance drone has travelled
+            distance=row["dist_travelled"],      # And total distance drone has travelled
+            anomaly_score=row["anomaly_score"], # Anomaly score of flight activity
+            activity=row["anomaly_label"]       # normal or suspicious activity
         )
 
     # Connect the nodes
@@ -95,7 +102,7 @@ def construct_flight_path(input,
         delta_time = (t2 - t1).total_seconds()      # Delta time in seconds
 
         # Calculate the distance between nodes
-        coord1 = (drone_log.loc[i, "imu_calc_lat"], drone_log.loc[i, "imu_calc_long"])
+        coord1 = (drone_log.loc[i, "imu_latitude"], drone_log.loc[i, "imu_longitude"])
         coord2 = (drone_log.loc[i+1, "gps_latitude"], drone_log.loc[i+1, "gps_longitude"])
         distance = geodesic(coord1, coord2).meters  # distance in meters
 
@@ -118,3 +125,7 @@ def construct_flight_path(input,
 
     # Return both the graph and pandas DataFrame representing the drone log
     return G, drone_log
+
+log = pd.read_csv("/Users/ladylo/PycharmProjects/FlightForensics/data/processed/logs/flight/DF061/anomaly_detection/model_ready/flight_anomaly_dataset.csv")
+log = log[log["flight_sequence"] == "flight04"].reset_index(drop=True)
+G, _ = construct_flight_path(log)
