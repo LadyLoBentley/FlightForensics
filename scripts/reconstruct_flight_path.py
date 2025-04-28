@@ -38,7 +38,7 @@ def construct_flight_path(input,
     '''
     Function to construct a spatial-temporal flight path.
 
-    :param input: String representing the file path to raw csv file containing flight logs.
+    :param input: pandas DataFrame object containing drone telemetry data.
     :param output: (Optional) string representing the file path to save the processed dataset.
     :param drop_duplicates: (Optional) Boolean to drop duplicate entries in the processed dataset.
     :return: A Directed Acyclic Graph object representing the spatial-temporal flight path and the pandas DataFrame containing flight logs.
@@ -52,7 +52,7 @@ def construct_flight_path(input,
         drone_log = drone_log.drop_duplicates(subset=["gps_latitude", "gps_longitude", "imu_latitude", "imu_longitude"])
 
     if drop_duplicates:
-        drone_log = drone_log.drop_duplicates(subset=["gps_latitude", "gps_longitude", "imu_calc_lat", "imu_calc_long"])
+        drone_log = drone_log.drop_duplicates(subset=["gps_latitude", "gps_longitude", "imu_latitude", "imu_longitude"])
 
     # Drop instances with relevant missing values
     drone_log = drone_log.dropna(subset=["imu_latitude",        # IMU-calculated latitude

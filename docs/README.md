@@ -17,6 +17,7 @@ classification for enhanced suspicious flight detection.
 2. **Reconstruct Flight Paths** using extracted data and a graph-based approach.
 3. **Visualize Drone Flight Paths** with real-time simulation using NetworkX & Matplotlib.
 4. **Implement Anomaly Detection** (Rule-Based & ML-Based) to classify suspicious flights.
+5. **Detect Unauthorized Surveillance** by implementing excessive hovering integrated with anomaly detection.
 5. **Ensure Scalability** by expanding to multiple datasets.
 
 ---
@@ -24,16 +25,17 @@ classification for enhanced suspicious flight detection.
 ## Project Structure
 
 - **data** → flight logs and other relevant extracted data
-  - **models**  → Trained XGBoost model for anomaly classification 
+  - **models**  → Trained XGBoost model for anomaly classification
+  - **Processed** → Cleaned datasets used in machine learning and flight path reconstruction.
+  - **Raw** → Original telemetry data extracted by drone logs.
 - **docs** → Documentation such as README, milestones, and project plans
 - **notebooks** → Jupyter notebooks for data exploration
 - **scripts** → Standalone scripts used for path reconstruction and validation
 - **src** → Core source code
-  - **analysis** → Flight data analysis scripts
+  - **analysis** → Flight data analysis scripts such as hover detection.
   - **preprocess** → Data cleaning and preprocessing scripts
   - **utils** → Helper functions and utilities
   - **visualization** → Flight path reconstruction and plotting
-- **tests** → Unit testing to verify data integrity 
 - **.gitignore** → Git ignored files
 - **requirements.txt** → Project dependencies
 
@@ -61,7 +63,7 @@ The flight path reconstruction module uses cleaned drone logs to create a spatia
 Each node represents a timestamped IMU-calculated position, and each edge connects sequential nodes, weighted by:
 
 - `delta_time`: Time elapsed between nodes
-- `distance`: IMU_based gepdesic distance
+- `distance`: IMU_based geodesic distance
 - `speed`: Distance divided by time
 - `position_error`: Deviation between IMU and GPS
 
@@ -88,7 +90,31 @@ The anomaly detection component uses a hybrid approach:
 - **Unsupervised Pre-Labeling**: An Isolation Forest is applied to cleaned logs to generate pseudo-labels (`-1` for anomaly, `1` for normal).
 - **Supervised Classification**: An XGBoost model is trained using these labels to learn generalizable anomaly patterns across flights.
 
-Notebook: `notebooks/flight_anomaly_model.ipynb`
+Notebook: `/notebooks/flight_anomaly_model.ipynb`
+
+---
+## Flight Simulation 
+
+Develops a simulation reenacting historic drone movements utilizing the networkX DAG as the data structure representing 
+the drone path and matplotlib's animation library to create a .mp4 visualization. Drone behavior is disclosed by the 
+color of the node: red indicates suspicious flight or suspicious hovering, green indicates normal flight, and blue 
+indicates normal hovering. Textual context is displayed to bring more insight to suspicious drone activity, distinguishing
+between hovering and normal flight activity.
+
+Script: `/scripts/simulate_drone_flight.py`
+
+---
+## Unauthorized Surveillance
+
+Utilizes Kahn's topological sorting algorithm to ensure temporal node ordering for successful hovering detection. 
+The script maintains two list: one for current segment of flight path, and another for confirmed hovering segments. 
+A threshold is given for speed and distance. If current segment remain below provided thresholds, then each node associated
+will be appended to the list. Otherwise, the total time of current segment is compared to a given time threshold. The total
+segment will be added to the hovering lists if hovering is confirmed, and the algorithm will reset current segment and 
+repeat until drone has landed.
+
+Topological Sorting: `/src/analysis/topo_sort.py`
+Drone Hover Detection: `/src/analysis/detect_excess_hover.py`
 
 ---
 
@@ -107,8 +133,6 @@ import joblib
 model = joblib.load("data/models/xgb_anomaly_model.pkl")
 y_pred = model.predict(new_flight_data)
 ```
-
-
 ---
 
 ## Installation
@@ -133,22 +157,22 @@ Data is sourced from the VTO.inc Drone Forensics Program, supported by DHS Cyber
   - Milestone 1: Define Scope & Requirements (Completed)
   - Milestone 2: Data Processing & NLP Model (Completed)
   - Milestone 3: Flight Path Reconstruction (Completed)
-  - Milestone 4: Initial Visualization (In Progress)
+  - Milestone 4: Initial Visualization (Completed)
 
 
 - **Phase 2:** Data Expansion & Refinement *(March 23 – April 10)*
   - Milestone 5: Feature Engineering & ML Model Training (Completed) 
-  - Milestone 6: Integrate model predictions into visualization (In Queue)
-  - Milestone 7: Final ML Model Testing & Refinements (In Queue)
+  - Milestone 6: Integrate model predictions into visualization (Completed)
+  - Milestone 7: Final ML Model Testing & Refinements (Completed)
 
 
 - **Phase 3:** Expansion of the Program *(April 17 – April 20)*
-  - Milestone 8: Expand NLP & Flight Path Reconstruction (In Queue) 
+  - Milestone 8: Expand NLP & Flight Path Reconstruction (Future Work) 
   
 
 - **Phase 4:** Final Testing & Documentation *(April 12 – April 23)*
-  - Milestone 9: System Testing & Optimization (In Queue) 
-  - Milestone 10: Documentation & Final Report (In Queue)
+  - Milestone 9: System Testing & Optimization (Completed) 
+  - Milestone 10: Documentation & Final Report (Completed)
 
 
 ---
